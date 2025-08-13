@@ -1,103 +1,137 @@
-import Image from "next/image";
+"use client"
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { 
+  Heart, 
+  Camera, 
+  GalleryVerticalEnd, 
+  Sparkles, 
+  Share2, 
+  Users 
+} from "lucide-react";
 
 export default function Home() {
+  const icons = [Heart, Camera, GalleryVerticalEnd, Sparkles, Share2, Users];
+  
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="relative min-h-screen bg-white overflow-hidden">
+      {/* Animated background icons */}
+      <div className="absolute inset-0 grid grid-cols-6 grid-rows-6 -z-10 opacity-10">
+        {Array.from({ length: 36 }).map((_, i) => {
+          const Icon = icons[i % icons.length];
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ 
+                opacity: [0.05, 0.15, 0.05],
+                scale: [0.8, 1, 0.8],
+              }}
+              transition={{
+                duration: 10 + Math.random() * 20,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="flex items-center justify-center"
+            >
+              <Icon className="w-6 h-6 text-gray-800" />
+            </motion.div>
+          );
+        })}
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-screen">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-3xl"
+        >
+          <motion.h1 
+            className="text-5xl md:text-7xl font-bold mb-6 text-gray-900"
+            whileHover={{ scale: 1.02 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            MEMORY <span className="text-orange-500">WALL</span>
+          </motion.h1>
+          
+          <motion.p 
+            className="text-lg md:text-xl text-gray-600 mb-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
           >
-            Read our docs
-          </a>
-        </div>
+            Capture moments, share memories. A digital tapestry of life's special events, 
+            where every photo tells a story and every memory finds its place.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Link href="/submit">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 bg-orange-500 text-white rounded-lg font-medium shadow-lg hover:shadow-orange-200 transition-all"
+              >
+                Share Your Memory
+              </motion.div>
+            </Link>
+            
+            <Link href="/wall">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-all"
+              >
+                View the Wall
+              </motion.div>
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        <motion.div 
+          className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+        >
+          {[
+            {
+              icon: <Camera className="w-8 h-8 text-orange-500" />,
+              title: "Capture",
+              text: "Snap photos directly or upload your favorite moments"
+            },
+            {
+              icon: <GalleryVerticalEnd className="w-8 h-8 text-orange-500" />,
+              title: "Curate",
+              text: "Beautifully displayed memories in a digital gallery"
+            },
+            {
+              icon: <Share2 className="w-8 h-8 text-orange-500" />,
+              title: "Share",
+              text: "Send memories to friends or share on social media"
+            }
+          ].map((feature, i) => (
+            <motion.div 
+              key={i}
+              className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              whileHover={{ y: -5 }}
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 p-3 bg-orange-50 rounded-full">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.text}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
