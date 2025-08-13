@@ -219,7 +219,7 @@ export default function SubmitPage() {
 
         <div className="mb-4">
           {!image ? (
-            <div className="relative aspect-[9/16] bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden">
               <video
                 ref={videoRef}
                 autoPlay
@@ -246,7 +246,7 @@ export default function SubmitPage() {
               </div>
             </div>
           ) : (
-            <div className="relative aspect-[9/16] bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden">
               <img
                 src={image}
                 alt="Captured"
