@@ -6,10 +6,10 @@ export const ourFileRouter = {
   memoryImage: f({
     image: { 
       maxFileSize: "4MB",
-      maxFileCount: 1,
+      maxFileCount: 2,
     }
   })
-  .onUploadComplete(() => {}), // No auth needed
+  .onUploadComplete(() => {}), 
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

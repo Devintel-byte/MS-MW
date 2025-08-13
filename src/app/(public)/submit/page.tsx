@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useUploadThing } from '@/lib/uploadthing';
+import html2canvas from 'html2canvas-pro';
+import MemoryCard from '@/app/components/CompositeMemoryCard';
+import { Memory } from '@/generated/prisma';
 
 export default function SubmitPage() {
   const [name, setName] = useState('');
@@ -13,12 +16,12 @@ export default function SubmitPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const { startUpload } = useUploadThing('memoryImage');
 
-  // Camera setup with restart capability
+  // Camera setup
   const startCamera = async () => {
     try {
-      // Stop any existing stream
       if (videoRef.current?.srcObject) {
         (videoRef.current.srcObject as MediaStream)
           .getTracks()
@@ -37,7 +40,6 @@ export default function SubmitPage() {
     }
   };
 
-  // Initialize camera on mount
   useEffect(() => {
     startCamera();
     return () => {
@@ -66,7 +68,7 @@ export default function SubmitPage() {
   }, [countdown]);
 
   const startCountdown = () => {
-    setCountdown(3); // Start 3-second countdown
+    setCountdown(3);
   };
 
   const captureImage = () => {
@@ -101,6 +103,33 @@ export default function SubmitPage() {
     return new File([u8arr], filename, { type: mime });
   };
 
+  const captureCompositeImage = async () => {
+    if (!cardRef.current) {
+      console.error('MemoryCard ref not available');
+      return null;
+    }
+    console.log('Capturing composite image');
+    try {
+      // Delay to ensure DOM is rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const canvas = await html2canvas(cardRef.current, {
+        useCORS: true,
+        scale: 2,
+        backgroundColor: '#ffffff', 
+      });
+      const dataUrl = canvas.toDataURL('image/png');
+      const uniqueId = `${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 8)}`;
+      const uniqueFilename = `composite-${uniqueId}.png`;
+      console.log('Composite image captured:', uniqueFilename);
+      return dataURLtoFile(dataUrl, uniqueFilename);
+    } catch (error) {
+      console.error('html2canvas error:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
     if (!image || !imageFile) {
       toast.error('Please capture or upload an image');
@@ -109,19 +138,29 @@ export default function SubmitPage() {
 
     setIsSubmitting(true);
     try {
-      const uploadResponse = await startUpload([imageFile]);
+      // Capture composite image (optional)
+      const compositeFile = await captureCompositeImage();
+      const filesToUpload = compositeFile ? [imageFile, compositeFile] : [imageFile];
+      console.log('Files to upload:', filesToUpload.map(f => f.name));
 
+      // Upload images
+      const uploadResponse = await startUpload(filesToUpload);
       if (!uploadResponse?.[0]?.url) {
-        throw new Error('Upload failed');
+        throw new Error('Image upload failed');
       }
 
+      // Prepare form data
       const formData = {
         name,
         message,
         imageUrl: uploadResponse[0].url,
+        ...(compositeFile && uploadResponse[1]?.ufsUrl && { fPhotoUrl: uploadResponse[1].ufsUrl }),
         ...(email.trim() !== '' && { email }),
       };
 
+      console.log('Submitting form data:', formData);
+
+      // Submit to API
       const res = await fetch('/api/submission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -134,24 +173,25 @@ export default function SubmitPage() {
       }
 
       toast.success('Memory submitted successfully!');
-      // Reset form and restart camera
       setName('');
       setMessage('');
       setEmail('');
       setImage(null);
       setImageFile(null);
-      await startCamera(); // Restart camera after successful submission
     } catch (error: any) {
+      console.error('Submission error:', error);
       toast.error(error.message || 'Submission failed. Please try again.');
     } finally {
       setIsSubmitting(false);
+      console.log('Restarting camera');
+      await startCamera();
     }
   };
 
   const handleRefreshCamera = async () => {
     setImage(null);
     setImageFile(null);
-    await startCamera(); // Restart camera when refresh button is clicked
+    await startCamera();
   };
 
   const isFormValid = name.trim() && message.trim() && image;
@@ -159,9 +199,28 @@ export default function SubmitPage() {
   return (
     <div className="min-h-screen bg-slate-200 p-4 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-        <h1 className="text-2xl font-bold text-orange-500 mb-6 text-center">
+        <h1 className="text-2xl font-bold text-[#f97316] mb-6 text-center">
           Share Your Memory
         </h1>
+
+        {/* Hidden CompositeMemoryCard */}
+        {image && (
+          <div className="absolute -left-[9999px]">
+            <MemoryCard
+              ref={cardRef}
+              memory={{
+                id: 'temp-id',
+                name,
+                message,
+                email: email.trim() || null,
+                imageUrl: image,
+                approved: false,
+                createdAt: new Date(),
+                fPhotoUrl: null,
+              }}
+            />
+          </div>
+        )}
 
         <div className="mb-4">
           {!image ? (
@@ -182,8 +241,9 @@ export default function SubmitPage() {
                   <button
                     onClick={startCountdown}
                     className="bg-white rounded-full p-3 shadow-lg"
+                    disabled={isSubmitting}
                   >
-                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#f97316] rounded-full flex items-center justify-center">
                       <span className="text-white text-xl"></span>
                     </div>
                   </button>
@@ -207,7 +267,7 @@ export default function SubmitPage() {
           )}
 
           <div className="mt-2 flex justify-center">
-            <label className="inline-block bg-orange-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-orange-600 transition">
+            <label className="inline-block bg-[#f97316] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#e66915] transition">
               <span>Upload from Gallery</span>
               <input
                 type="file"
@@ -246,7 +306,7 @@ export default function SubmitPage() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
               placeholder="John Doe"
               required
             />
@@ -259,7 +319,7 @@ export default function SubmitPage() {
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
               placeholder="What's this memory about?"
               rows={3}
               required
@@ -274,7 +334,7 @@ export default function SubmitPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
               placeholder="your@email.com"
             />
           </div>
@@ -284,7 +344,7 @@ export default function SubmitPage() {
             disabled={!isFormValid || isSubmitting}
             className={`w-full py-3 text-lg ${
               isFormValid
-                ? 'bg-orange-500 hover:bg-orange-600'
+                ? 'bg-[#f97316] hover:bg-[#e66915]'
                 : 'bg-gray-400 cursor-not-allowed'
             }`}
           >

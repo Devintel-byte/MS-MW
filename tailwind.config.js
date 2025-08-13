@@ -22,22 +22,19 @@ module.exports = {
       current: 'currentColor',
       white: '#ffffff',
       gray: {
-        100: 'rgb(243, 244, 246)', // Tailwind gray-100
-        200: 'rgb(229, 231, 235)', // Tailwind gray-200
-        400: 'rgb(156, 163, 175)', // Tailwind gray-400
-        500: 'rgb(107, 114, 128)', // Tailwind gray-500
-        700: 'rgb(55, 65, 81)', // Tailwind gray-700
-        800: 'rgb(31, 41, 55)', // Tailwind gray-800
-      },
+          50: '#f9fafb',
+          100: '#e5e7eb',
+          400: '#9ca3af',
+          700: '#374151',
+          800: '#1f2937',
+        },
       orange: {
-        100: 'rgb(255, 237, 213)', // Tailwind orange-100
-        500: 'rgb(249, 115, 22)', // Tailwind orange-500
-        600: 'rgb(234, 88, 12)', // Tailwind orange-600
-      },
+          100: '#fed7aa',
+          500: '#f97316',
+          600: '#e66915',
+        },
       black: 'rgb(0, 0, 0)',
-      slate: {
-        200: 'rgb(203, 213, 225)', // Tailwind slate-200
-      },
+     slate: { 200: '#e2e8f0' },
     },
   },
 };

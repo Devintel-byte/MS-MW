@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: "/**",
       },
+      {
+        protocol: 'https',
+        hostname: 'uqjb5tda0n.ufs.sh',
+        port: '',
+        pathname: "/**",
+      },
     ],
   },
 };

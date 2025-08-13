@@ -1,7 +1,6 @@
 'use client';
-
 import { useState, useEffect } from 'react';
-import MemoryCard from '@/app/components/MemoryCard';
+import MemoryCard from '@/app/components/CompositeMemoryCard';
 import { Memory } from '@/generated/prisma';
 
 type MemoriesResponse = {
@@ -19,7 +18,7 @@ export default function WallPage() {
   const fetchMemories = async () => {
     try {
       const res = await fetch('/api/memories', {
-        cache: 'no-store', // Ensure fresh data
+        cache: 'no-store',
       });
 
       if (!res.ok) {
@@ -35,7 +34,6 @@ export default function WallPage() {
         return;
       }
 
-      // Only update if hash has changed
       if (data.hash !== lastHash) {
         setMemories(data.memories);
         setLastHash(data.hash);
@@ -48,12 +46,10 @@ export default function WallPage() {
     }
   };
 
-  // Initial fetch and polling
   useEffect(() => {
-    fetchMemories(); // Initial fetch
-    const interval = setInterval(fetchMemories, 5000); // Poll every 5 seconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
+    fetchMemories();
+    const interval = setInterval(fetchMemories, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -76,9 +72,12 @@ export default function WallPage() {
           No approved memories yet. Share yours now!
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {memories.map((memory) => (
-          <MemoryCard key={memory.id} memory={memory} />
+          <MemoryCard key={memory.id} memory={{
+            ...memory,
+            imageUrl: memory.fPhotoUrl || memory.imageUrl, 
+          }} />
         ))}
       </div>
     </div>
