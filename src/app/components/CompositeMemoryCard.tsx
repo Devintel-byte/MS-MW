@@ -22,7 +22,7 @@ const CompositeMemoryCard = ({ memory }: { memory: Memory }, ref: React.Ref<HTML
       ref={ref}
       style={{
         width: '100%',
-        maxWidth: '24rem', // max-w-sm
+        maxWidth: '24rem', 
         backgroundColor: '#ffffff',
         border: '1px solid #e5e7eb',
         borderRadius: '0.5rem',
@@ -47,7 +47,7 @@ const CompositeMemoryCard = ({ memory }: { memory: Memory }, ref: React.Ref<HTML
               width: '2rem',
               height: '2rem',
               borderRadius: '9999px',
-              backgroundColor: '#fed7aa', // orange-100
+              backgroundColor: '#fed7aa', 
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

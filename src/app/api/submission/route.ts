@@ -14,7 +14,6 @@ const schema = z.object({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('Received submission:', JSON.stringify(body, null, 2));
     const validation = schema.safeParse(body);
 
     if (!validation.success) {
@@ -25,7 +24,6 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Validated data:', JSON.stringify(validation.data, null, 2));
     const memory = await prisma.memory.create({
       data: {
         name: validation.data.name,
@@ -36,9 +34,7 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log('Created memory:', JSON.stringify(memory, null, 2));
     await redis.del('approvedMemories');
-    console.log('Redis cache cleared: approvedMemories');
 
     return NextResponse.json(memory, { status: 201 });
   } catch (error: any) {

@@ -108,7 +108,6 @@ export default function SubmitPage() {
       console.error('MemoryCard ref not available');
       return null;
     }
-    console.log('Capturing composite image');
     try {
       // Delay to ensure DOM is rendered
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -122,7 +121,6 @@ export default function SubmitPage() {
         .toString(36)
         .substring(2, 8)}`;
       const uniqueFilename = `composite-${uniqueId}.png`;
-      console.log('Composite image captured:', uniqueFilename);
       return dataURLtoFile(dataUrl, uniqueFilename);
     } catch (error) {
       console.error('html2canvas error:', error);
@@ -141,7 +139,6 @@ export default function SubmitPage() {
       // Capture composite image (optional)
       const compositeFile = await captureCompositeImage();
       const filesToUpload = compositeFile ? [imageFile, compositeFile] : [imageFile];
-      console.log('Files to upload:', filesToUpload.map(f => f.name));
 
       // Upload images
       const uploadResponse = await startUpload(filesToUpload);
@@ -157,8 +154,6 @@ export default function SubmitPage() {
         ...(compositeFile && uploadResponse[1]?.ufsUrl && { fPhotoUrl: uploadResponse[1].ufsUrl }),
         ...(email.trim() !== '' && { email }),
       };
-
-      console.log('Submitting form data:', formData);
 
       // Submit to API
       const res = await fetch('/api/submission', {

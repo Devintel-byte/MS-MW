@@ -5,13 +5,11 @@ import { Memory } from '@/generated/prisma';
 
 type MemoriesResponse = {
   memories: Memory[];
-  hash: string;
   tableDropped: boolean;
 };
 
 export default function WallPage() {
   const [memories, setMemories] = useState<Memory[]>([]);
-  const [lastHash, setLastHash] = useState<string>('');
   const [tableDropped, setTableDropped] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,21 +25,23 @@ export default function WallPage() {
       }
 
       const data: MemoriesResponse = await res.json();
+
       if (data.tableDropped) {
         setTableDropped(true);
         setMemories([]);
-        setLastHash('');
+        setError(null);
         return;
       }
 
-      if (data.hash !== lastHash) {
+      // Update if memories differ (by IDs or length)
+      const currentIds = memories.map(m => m.id).sort();
+      const newIds = data.memories.map(m => m.id).sort();
+      if (currentIds.join() !== newIds.join() || memories.length !== data.memories.length) {
         setMemories(data.memories);
-        setLastHash(data.hash);
         setTableDropped(false);
+        setError(null);
       }
-      setError(null);
     } catch (err: any) {
-      console.error('[WALL_PAGE_ERROR]', err);
       setError(err.message || 'Failed to load memories');
     }
   };
@@ -74,10 +74,13 @@ export default function WallPage() {
       )}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {memories.map((memory) => (
-          <MemoryCard key={memory.id} memory={{
-            ...memory,
-            imageUrl: memory.fPhotoUrl || memory.imageUrl, 
-          }} />
+          <MemoryCard
+            key={memory.id}
+            memory={{
+              ...memory,
+              imageUrl: memory.imageUrl || memory.imageUrl,
+            }}
+          />
         ))}
       </div>
     </div>
