@@ -13,6 +13,9 @@ export default function WallPage() {
   const [tableDropped, setTableDropped] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Maximum number of cards to display (adjustable based on screen size)
+  const MAX_CARDS = 20;
+
   const fetchMemories = async () => {
     try {
       const res = await fetch(`/api/memories?t=${Date.now()}`, {
@@ -43,11 +46,21 @@ export default function WallPage() {
         return;
       }
 
+      // Sort by createdAt (handle null) and take the latest MAX_CARDS
+      const sortedMemories = data.memories
+        .sort((a, b) => {
+          // Use a default date (e.g., far past) for null createdAt
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA; // Descending order (newest first)
+        })
+        .slice(0, MAX_CARDS);
+
       // Update if memories differ
       const currentIds = memories.map(m => m.id).sort();
-      const newIds = data.memories.map(m => m.id).sort();
-      if (currentIds.join() !== newIds.join() || memories.length !== data.memories.length) {
-        setMemories(data.memories);
+      const newIds = sortedMemories.map(m => m.id).sort();
+      if (currentIds.join() !== newIds.join() || memories.length !== sortedMemories.length) {
+        setMemories(sortedMemories);
         setTableDropped(false);
         setError(null);
       }
@@ -64,7 +77,7 @@ export default function WallPage() {
   }, []);
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
+    <div className="bg-gray-100 min-h-screen p-4 flex flex-col items-center">
       <h1 className="text-3xl font-bold text-orange-500 mb-8 text-center">
         Memory Wall
       </h1>
@@ -83,7 +96,7 @@ export default function WallPage() {
           No approved memories yet. Share yours now!
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2.5 w-full max-w-[1920px] mx-auto">
         {memories.map((memory) => (
           <MemoryCard
             key={memory.id}

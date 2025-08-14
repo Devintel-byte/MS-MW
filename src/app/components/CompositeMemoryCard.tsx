@@ -1,6 +1,7 @@
 'use client';
 import { Memory } from "@/generated/prisma";
 import { HeartIcon, ChatBubbleOvalLeftIcon, BookmarkIcon } from "@heroicons/react/24/outline";
+import { Share2 } from "lucide-react";
 import Image from "next/image";
 import { forwardRef } from 'react';
 
@@ -20,109 +21,58 @@ const CompositeMemoryCard = ({ memory }: { memory: Memory }, ref: React.Ref<HTML
   return (
     <div
       ref={ref}
-      style={{
-        width: '100%',
-        maxWidth: '24rem', 
-        backgroundColor: '#ffffff',
-        border: '1px solid #e5e7eb',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      className="w-full max-w-[24rem] bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col"
     >
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.75rem',
-          borderBottom: '1px solid #e5e7eb',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              width: '2rem',
-              height: '2rem',
-              borderRadius: '9999px',
-              backgroundColor: '#fed7aa', 
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ color: '#f97316', fontWeight: 600, fontSize: '0.875rem' }}>
+      <div className="flex items-center justify-between p-3 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+            <span className="text-orange-500 font-semibold text-sm">
               {memory.name.charAt(0).toUpperCase()}
             </span>
           </div>
-          <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{memory.name}</span>
+          <span className="font-semibold text-sm">{memory.name}</span>
         </div>
-        <button
-          style={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            color: '#f97316',
-            border: '1px solid #f97316',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '0.25rem',
-          }}
-        >
+        <button className="text-xs font-bold text-orange-500 border border-orange-500 px-3 py-1 rounded cursor-pointer hover:bg-orange-50">
           Follow
         </button>
       </div>
 
       {/* Image */}
-      <div
-        style={{
-          width: '100%',
-          aspectRatio: '1/1',
-          backgroundColor: '#f9fafb',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="w-full aspect-square bg-gray-50 overflow-hidden">
         <Image
           src={memory.imageUrl}
           alt={memory.name}
           width={400}
           height={400}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Actions */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '0.75rem 1rem 0',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <HeartIcon style={{ width: '1.25rem', height: '1.25rem' }} />
-            <span style={{ fontSize: '0.75rem' }}>1,234</span>
+      <div className="flex flex-col p-3 pt-0">
+        <div className="flex items-start justify-between mt-3">
+        <div className="flex gap-4">
+          <div className="flex gap-1">
+            <HeartIcon className="w-6 h-6 text-red-500 fill-red-500" />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <ChatBubbleOvalLeftIcon style={{ width: '1.25rem', height: '1.25rem' }} />
-            <span style={{ fontSize: '0.75rem' }}>456</span>
+          <div className="flex items-center gap-1">
+            <ChatBubbleOvalLeftIcon className="w-6 h-6" />
+            <span className="text-xs"></span>
           </div>
         </div>
         <div>
-          <BookmarkIcon style={{ width: '1.25rem', height: '1.25rem' }} />
+          <BookmarkIcon className="w-6 h-6" />
         </div>
+      </div>
+      <span className="text-[10px] mt-1">Liked by <b>movingsurface_ng</b> and <b>others</b></span>
       </div>
 
       {/* Caption */}
-      <div style={{ padding: '0.5rem 1rem' }}>
-        <p style={{ fontSize: '0.875rem', fontWeight: 600 }}>{memory.name}</p>
-        <p style={{ fontSize: '0.875rem', color: '#1f2937', marginTop: '0.25rem' }}>
-          {truncatedMessage}
-        </p>
-        <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
-          {formattedDate}
-        </p>
+      <div className="p-3 pt-0">
+        <p className="text-sm font-semibold">{memory.name}</p>
+        <p className="text-sm text-gray-800 mt-1">{truncatedMessage}</p>
+        <p className="text-xs text-gray-400 mt-2">{formattedDate}</p>
       </div>
     </div>
   );

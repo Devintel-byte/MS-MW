@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useUploadThing } from '@/lib/uploadthing';
 import html2canvas from 'html2canvas-pro';
 import MemoryCard from '@/app/components/CompositeMemoryCard';
+import SubmissionLoader from '@/app/components/SubmissionLoader';
 import { Memory } from '@/generated/prisma';
 
 export default function SubmitPage() {
@@ -149,8 +150,8 @@ export default function SubmitPage() {
       const formData = {
         name,
         message,
-        imageUrl: uploadResponse[0].url,
-        ...(compositeFile && uploadResponse[1]?.ufsUrl && { fPhotoUrl: uploadResponse[1].ufsUrl }),
+        imageUrl: uploadResponse[0].url, // Fixed: Use .url instead of .ufsUrl
+        ...(compositeFile && uploadResponse[1]?.url && { fPhotoUrl: uploadResponse[1].url }),
         ...(email.trim() !== '' && { email }),
       };
 
@@ -190,7 +191,7 @@ export default function SubmitPage() {
 
   return (
     <div className="min-h-screen bg-slate-200 p-4 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
         <h1 className="text-2xl font-bold text-[#f97316] mb-6 text-center">
           Share Your Memory
         </h1>
@@ -348,6 +349,8 @@ export default function SubmitPage() {
             )}
           </div>
         </div>
+
+        {isSubmitting && <SubmissionLoader />}
       </div>
     </div>
   );
