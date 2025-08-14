@@ -13,13 +13,6 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    console.log('Fetched memories on Vercel:', memories.map(m => ({
-      id: m.id,
-      approved: m.approved,
-      createdAt: m.createdAt,
-      imageUrl: m.imageUrl,
-    })));
-
     return NextResponse.json(
       {
         memories,

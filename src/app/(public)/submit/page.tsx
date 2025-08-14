@@ -29,7 +29,7 @@ export default function SubmitPage() {
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', aspectRatio: 9 / 16 },
+        video: { facingMode: 'user', aspectRatio: 4 / 3 },
       });
       
       if (videoRef.current) {
@@ -78,6 +78,9 @@ export default function SubmitPage() {
       canvas.height = videoRef.current.videoHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
+        // Flip the image horizontally to correct mirroring
+        ctx.scale(-1, 1);
+        ctx.translate(-canvas.width, 0);
         ctx.drawImage(videoRef.current, 0, 0);
         const dataUrl = canvas.toDataURL('image/jpeg');
         setImage(dataUrl);
@@ -109,12 +112,11 @@ export default function SubmitPage() {
       return null;
     }
     try {
-      // Delay to ensure DOM is rendered
       await new Promise(resolve => setTimeout(resolve, 100));
       const canvas = await html2canvas(cardRef.current, {
         useCORS: true,
         scale: 2,
-        backgroundColor: '#ffffff', 
+        backgroundColor: '#ffffff',
       });
       const dataUrl = canvas.toDataURL('image/png');
       const uniqueId = `${Date.now()}-${Math.random()
@@ -136,17 +138,14 @@ export default function SubmitPage() {
 
     setIsSubmitting(true);
     try {
-      // Capture composite image (optional)
       const compositeFile = await captureCompositeImage();
       const filesToUpload = compositeFile ? [imageFile, compositeFile] : [imageFile];
 
-      // Upload images
       const uploadResponse = await startUpload(filesToUpload);
       if (!uploadResponse?.[0]?.url) {
         throw new Error('Image upload failed');
       }
 
-      // Prepare form data
       const formData = {
         name,
         message,
@@ -155,7 +154,6 @@ export default function SubmitPage() {
         ...(email.trim() !== '' && { email }),
       };
 
-      // Submit to API
       const res = await fetch('/api/submission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -178,7 +176,6 @@ export default function SubmitPage() {
       toast.error(error.message || 'Submission failed. Please try again.');
     } finally {
       setIsSubmitting(false);
-      console.log('Restarting camera');
       await startCamera();
     }
   };
@@ -219,13 +216,13 @@ export default function SubmitPage() {
 
         <div className="mb-4">
           {!image ? (
-            <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden">
               <video
                 ref={videoRef}
                 autoPlay
                 playsInline
                 muted
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
               />
               <div className="absolute inset-0 flex flex-col items-center justify-end pb-4">
                 {countdown !== null ? (
@@ -235,7 +232,7 @@ export default function SubmitPage() {
                 ) : (
                   <button
                     onClick={startCountdown}
-                    className="bg-white rounded-full p-3 shadow-lg"
+                    className="bg-white rounded-full p-3 shadow-lg cursor-pointer"
                     disabled={isSubmitting}
                   >
                     <div className="w-12 h-12 bg-[#f97316] rounded-full flex items-center justify-center">
@@ -246,18 +243,12 @@ export default function SubmitPage() {
               </div>
             </div>
           ) : (
-            <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden">
               <img
                 src={image}
                 alt="Captured"
                 className="w-full h-full object-cover"
               />
-              <button
-                onClick={handleRefreshCamera}
-                className="absolute top-2 right-2 bg-black/50 text-white p-2 rounded-full"
-              >
-                ↻
-              </button>
             </div>
           )}
 
@@ -313,6 +304,7 @@ export default function SubmitPage() {
             </label>
             <textarea
               value={message}
+              maxLength={80}
               onChange={(e) => setMessage(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
               placeholder="What's this memory about?"
@@ -323,7 +315,7 @@ export default function SubmitPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email (optional-lol)
+              Email (optional)
             </label>
             <input
               type="email"
@@ -334,17 +326,27 @@ export default function SubmitPage() {
             />
           </div>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={!isFormValid || isSubmitting}
-            className={`w-full py-3 text-lg ${
-              isFormValid
-                ? 'bg-[#f97316] hover:bg-[#e66915]'
-                : 'bg-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {isSubmitting ? 'Submitting...' : 'Share Memory'}
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
+              className={`flex-1 py-3 text-lg cursor-pointer ${
+                isFormValid
+                  ? 'bg-[#f97316] hover:bg-[#e66915] text-white'
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
+            >
+              {isSubmitting ? 'Submitting...' : 'Share Memory'}
+            </Button>
+            {isFormValid && (
+              <Button
+                onClick={handleRefreshCamera}
+                className="flex-1 py-3 text-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
+              >
+                Retake
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
