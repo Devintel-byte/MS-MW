@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import MemoryCard from '@/app/components/CompositeMemoryCard';
 import { Memory } from '@/generated/prisma';
-import Link from 'next/link';
 import { ChevronLeftIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -37,12 +36,6 @@ export default function WallPage() {
       }
 
       const data: MemoriesResponse = await res.json();
-      console.log('Client received memories:', data.memories.map(m => ({
-        id: m.id,
-        approved: m.approved,
-        createdAt: m.createdAt,
-        imageUrl: m.imageUrl,
-      })));
 
       if (data.tableDropped) {
         setTableDropped(true);
@@ -54,7 +47,6 @@ export default function WallPage() {
       // Sort by createdAt (handle null) and take the latest MAX_CARDS
       const sortedMemories = data.memories
         .sort((a, b) => {
-          // Use a default date (e.g., far past) for null createdAt
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
           return dateB - dateA; // Descending order (newest first)
@@ -83,25 +75,22 @@ export default function WallPage() {
 
   const goBack = () => {
     router.back();
-  }
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen p-4 flex flex-col items-center">
-      <div className='absolute bg-[#f97316] text-white border-0 rounded-md flex items-center left-0 top-0 p-3 m-4'>
-             <Link href="#" 
-              onClick={(e) => {
-                  e.preventDefault();
-                  goBack();
-                }} 
-              className="flex items-center"
-              >
-                <ChevronLeftIcon />
-                Back
-            </Link>
-            </div>
+      <div className='gap-x-1'>
+        <button
+        onClick={goBack}
+        className="fixed top-4 left-4 z-10 bg-[#f97316] text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-[#e66915] transition-colors"
+        aria-label="Go back"
+      >
+        <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
       <h1 className="text-3xl font-bold text-orange-500 mb-8 text-center">
         Memory Wall
       </h1>
+      </div>
       {error && (
         <div className="text-center text-red-500 mb-4">
           {error}

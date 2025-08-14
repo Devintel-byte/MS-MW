@@ -212,18 +212,13 @@ export default function SubmitPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-4 flex items-center justify-center">
-      <div className='absolute bg-[#f97316] text-white border-0 rounded-md flex items-center left-0 top-0 p-3 m-4'>
-       <Link href="#" 
-        onClick={(e) => {
-            e.preventDefault();
-            goBack();
-          }} 
-        className="flex items-center"
-        >
-          <ChevronLeftIcon />
-          Back
-      </Link>
-      </div>
+      <button
+        onClick={goBack}
+        className="fixed top-4 left-4 z-10 bg-[#f97316] text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-[#e66915] transition-colors"
+        aria-label="Go back"
+      >
+        <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
         <h1 className="text-2xl font-bold text-[#f97316] mb-6 text-center">
           Share Your Memory
