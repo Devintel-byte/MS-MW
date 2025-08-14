@@ -212,17 +212,19 @@ export default function SubmitPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-4 flex items-center justify-center">
-      <button
-        onClick={goBack}
-        className="fixed top-4 left-4 z-10 bg-[#f97316] text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-[#e66915] transition-colors"
-        aria-label="Go back"
-      >
-        <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-      </button>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
-        <h1 className="text-2xl font-bold text-[#f97316] mb-6 text-center">
+        <div className='flex items-start justify-between'>
+          <button
+          onClick={goBack}
+          className=" bg-[#f97316] mt-[-5px] text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-[#e66915] transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+        <h1 className="justify-center text-2xl font-bold text-[#f97316] mb-6 text-center">
           Share Your Memory
         </h1>
+        </div>
 
         {/* Hidden CompositeMemoryCard */}
         {image && (
