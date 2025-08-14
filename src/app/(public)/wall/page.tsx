@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react';
 import MemoryCard from '@/app/components/CompositeMemoryCard';
 import { Memory } from '@/generated/prisma';
+import Link from 'next/link';
+import { ChevronLeftIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type MemoriesResponse = {
   memories: Memory[];
@@ -12,6 +15,8 @@ export default function WallPage() {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [tableDropped, setTableDropped] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   // Maximum number of cards to display (adjustable based on screen size)
   const MAX_CARDS = 20;
@@ -76,8 +81,24 @@ export default function WallPage() {
     return () => clearInterval(interval);
   }, []);
 
+  const goBack = () => {
+    router.back();
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen p-4 flex flex-col items-center">
+      <div className='absolute bg-[#f97316] text-white border-0 rounded-md flex items-center left-0 top-0 p-3 m-4'>
+             <Link href="#" 
+              onClick={(e) => {
+                  e.preventDefault();
+                  goBack();
+                }} 
+              className="flex items-center"
+              >
+                <ChevronLeftIcon />
+                Back
+            </Link>
+            </div>
       <h1 className="text-3xl font-bold text-orange-500 mb-8 text-center">
         Memory Wall
       </h1>

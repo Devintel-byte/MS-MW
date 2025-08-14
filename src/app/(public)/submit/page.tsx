@@ -6,7 +6,11 @@ import { useUploadThing } from '@/lib/uploadthing';
 import html2canvas from 'html2canvas-pro';
 import MemoryCard from '@/app/components/CompositeMemoryCard';
 import SubmissionLoader from '@/app/components/SubmissionLoader';
+import SubmissionSuccess from '@/app/components/SubmissionSuccess';
 import { Memory } from '@/generated/prisma';
+import { ChevronLeftIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function SubmitPage() {
   const [name, setName] = useState('');
@@ -15,10 +19,13 @@ export default function SubmitPage() {
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const { startUpload } = useUploadThing('memoryImage');
+
+  const router = useRouter();
 
   // Camera setup
   const startCamera = async () => {
@@ -68,6 +75,16 @@ export default function SubmitPage() {
     return () => clearTimeout(timer);
   }, [countdown]);
 
+  // Success modal auto-dismiss
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        setIsSuccess(false);
+      }, 5000); // Dismiss after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess]);
+
   const startCountdown = () => {
     setCountdown(3);
   };
@@ -79,7 +96,6 @@ export default function SubmitPage() {
       canvas.height = videoRef.current.videoHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Flip the image horizontally to correct mirroring
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
         ctx.drawImage(videoRef.current, 0, 0);
@@ -150,7 +166,7 @@ export default function SubmitPage() {
       const formData = {
         name,
         message,
-        imageUrl: uploadResponse[0].url, // Fixed: Use .url instead of .ufsUrl
+        imageUrl: uploadResponse[0].url,
         ...(compositeFile && uploadResponse[1]?.url && { fPhotoUrl: uploadResponse[1].url }),
         ...(email.trim() !== '' && { email }),
       };
@@ -166,6 +182,7 @@ export default function SubmitPage() {
         throw new Error(errorData.error || 'Submission failed');
       }
 
+      setIsSuccess(true);
       toast.success('Memory submitted successfully!');
       setName('');
       setMessage('');
@@ -187,10 +204,26 @@ export default function SubmitPage() {
     await startCamera();
   };
 
+  const goBack = () => {
+    router.back();
+  }
+
   const isFormValid = name.trim() && message.trim() && image;
 
   return (
-    <div className="min-h-screen bg-slate-200 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-slate-100 p-4 flex items-center justify-center">
+      <div className='absolute bg-[#f97316] text-white border-0 rounded-md flex items-center left-0 top-0 p-3 m-4'>
+       <Link href="#" 
+        onClick={(e) => {
+            e.preventDefault();
+            goBack();
+          }} 
+        className="flex items-center"
+        >
+          <ChevronLeftIcon />
+          Back
+      </Link>
+      </div>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
         <h1 className="text-2xl font-bold text-[#f97316] mb-6 text-center">
           Share Your Memory
@@ -339,7 +372,7 @@ export default function SubmitPage() {
             >
               {isSubmitting ? 'Submitting...' : 'Share Memory'}
             </Button>
-            {isFormValid && (
+            {image && (
               <Button
                 onClick={handleRefreshCamera}
                 className="flex-1 py-3 text-lg bg-gray-600 hover:bg-gray-700 text-white cursor-pointer"
@@ -351,6 +384,7 @@ export default function SubmitPage() {
         </div>
 
         {isSubmitting && <SubmissionLoader />}
+        {isSuccess && <SubmissionSuccess />}
       </div>
     </div>
   );
