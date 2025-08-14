@@ -15,8 +15,12 @@ export default function WallPage() {
 
   const fetchMemories = async () => {
     try {
-      const res = await fetch('/api/memories', {
+      const res = await fetch(`/api/memories?t=${Date.now()}`, {
         cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+        },
       });
 
       if (!res.ok) {
@@ -25,6 +29,12 @@ export default function WallPage() {
       }
 
       const data: MemoriesResponse = await res.json();
+      console.log('Client received memories:', data.memories.map(m => ({
+        id: m.id,
+        approved: m.approved,
+        createdAt: m.createdAt,
+        imageUrl: m.imageUrl,
+      })));
 
       if (data.tableDropped) {
         setTableDropped(true);
@@ -33,7 +43,7 @@ export default function WallPage() {
         return;
       }
 
-      // Update if memories differ (by IDs or length)
+      // Update if memories differ
       const currentIds = memories.map(m => m.id).sort();
       const newIds = data.memories.map(m => m.id).sort();
       if (currentIds.join() !== newIds.join() || memories.length !== data.memories.length) {
@@ -42,6 +52,7 @@ export default function WallPage() {
         setError(null);
       }
     } catch (err: any) {
+      console.error('Fetch error:', err);
       setError(err.message || 'Failed to load memories');
     }
   };

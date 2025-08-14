@@ -3,7 +3,7 @@ import prisma from '@/index';
 import { Memory } from '@/generated/prisma';
 
 export const dynamic = 'force-dynamic'; // Forces dynamic rendering on Vercel
-export const revalidate = 0; // Disables revalidation/caching (0 means no cache)
+export const revalidate = 0; // Disables revalidation/caching
 
 export async function GET() {
   try {
@@ -13,26 +13,58 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    console.log('Returning memories:', memories.map(m => ({ id: m.id, approved: m.approved })));
+    console.log('Fetched memories on Vercel:', memories.map(m => ({
+      id: m.id,
+      approved: m.approved,
+      createdAt: m.createdAt,
+      imageUrl: m.imageUrl,
+    })));
 
-    return NextResponse.json({
-      memories,
-      tableDropped: false,
-    });
+    return NextResponse.json(
+      {
+        memories,
+        tableDropped: false,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'Vercel-Cache': 'no-cache',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('[MEMORIES_ERROR]', error);
 
-    // Handle table not found or other errors
     if (error.code === 'P2021') {
-      return NextResponse.json({
-        memories: [],
-        tableDropped: true,
-      });
+      return NextResponse.json(
+        {
+          memories: [],
+          tableDropped: true,
+        },
+        {
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'Vercel-Cache': 'no-cache',
+          },
+        }
+      );
     }
 
     return NextResponse.json(
       { error: 'Database error', details: error.message },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'Vercel-Cache': 'no-cache',
+        },
+      }
     );
   }
 }
