@@ -78,16 +78,16 @@ export default function WallPage() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 flex flex-col items-center">
+    <div className="bg-red-100/10 min-h-screen p-4 flex flex-col items-center">
       <div className='gap-x-1'>
         <button
         onClick={goBack}
-        className="fixed top-4 left-4 z-10 bg-[#f97316] text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-[#e66915] transition-colors"
+        className="fixed top-4 left-4 z-10 bg-red-500 text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center hover:bg-[#e66915] transition-colors"
         aria-label="Go back"
       >
-        <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <ChevronLeftIcon className="w-4 h-4 sm:w-6 sm:h-6" />
       </button>
-      <h1 className="text-3xl font-bold text-orange-500 mb-8 text-center">
+      <h1 className="text-3xl font-bold text-red-500 mb-8 text-center">
         Memory Wall
       </h1>
       </div>

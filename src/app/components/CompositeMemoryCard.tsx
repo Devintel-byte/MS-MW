@@ -26,14 +26,14 @@ const CompositeMemoryCard = ({ memory }: { memory: Memory }, ref: React.Ref<HTML
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-            <span className="text-orange-500 font-semibold text-sm">
-              {memory.name.charAt(0).toUpperCase()}
+          <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
+            <span className="font-semibold text-sm">
+              <img src='/icon_only.png' alt="MSurface_logo" />
             </span>
           </div>
-          <span className="font-semibold text-sm">{memory.name}</span>
+          <span className="font-semibold text-sm">Moving Surface</span>
         </div>
-        <button className="text-xs font-bold text-orange-500 border border-orange-500 px-3 py-1 rounded cursor-pointer hover:bg-orange-50">
+        <button className="text-xs font-bold text-red-500 border border-red-500 px-3 py-1 rounded cursor-pointer hover:bg-orange-50">
           Follow
         </button>
       </div>

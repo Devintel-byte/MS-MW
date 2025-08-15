@@ -15,7 +15,7 @@ export default function Home() {
   const icons = [Heart, Camera, GalleryVerticalEnd, Sparkles, Share2, Users];
   
   return (
-    <div className="relative min-h-screen bg-white overflow-hidden">
+    <div className="relative min-h-screen bg-red-100/10 overflow-hidden">
       {/* Animated background icons */}
       <div className="absolute inset-0 grid grid-cols-6 grid-rows-6 -z-10 opacity-10">
         {Array.from({ length: 36 }).map((_, i) => {
@@ -52,7 +52,7 @@ export default function Home() {
             className="text-5xl md:text-7xl font-bold mb-6 text-gray-900"
             whileHover={{ scale: 1.02 }}
           >
-            MEMORY <span className="text-orange-500">WALL</span>
+            MEMORY <span className="text-red-500">WALL</span>
           </motion.h1>
           
           <motion.p 
@@ -75,7 +75,7 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-orange-500 text-white rounded-lg font-medium shadow-lg hover:shadow-orange-200 transition-all"
+                className="px-8 py-3 bg-red-500 text-white rounded-lg font-medium shadow-lg hover:shadow-red-200 transition-all"
               >
                 Share Your Memory
               </motion.div>
@@ -101,17 +101,17 @@ export default function Home() {
         >
           {[
             {
-              icon: <Camera className="w-8 h-8 text-orange-500" />,
+              icon: <Camera className="w-8 h-8 text-red-500" />,
               title: "Capture",
               text: "Snap photos directly or upload your favorite moments"
             },
             {
-              icon: <GalleryVerticalEnd className="w-8 h-8 text-orange-500" />,
+              icon: <GalleryVerticalEnd className="w-8 h-8 text-red-500" />,
               title: "Curate",
               text: "Beautifully displayed memories in a digital gallery"
             },
             {
-              icon: <Share2 className="w-8 h-8 text-orange-500" />,
+              icon: <Share2 className="w-8 h-8 text-red-500" />,
               title: "Share",
               text: "Send memories to friends or share on social media"
             }
@@ -122,7 +122,7 @@ export default function Home() {
               whileHover={{ y: -5 }}
             >
               <div className="flex flex-col items-center text-center">
-                <div className="mb-4 p-3 bg-orange-50 rounded-full">
+                <div className="mb-4 p-3 bg-red-50 rounded-full">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
@@ -131,6 +131,71 @@ export default function Home() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* How to Use Section */}
+        <motion.section
+          className="mt-24 w-full max-w-5xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            How to Use Memory Wall
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "Step 1",
+                title: "Share Your Memory",
+                content: (
+                  <>
+                    Click the{" "}
+                    <Link href="/submit" className="text-red-500 hover:underline">
+                      Share a Photo
+                    </Link>{" "}
+                    button to get started:
+                    <ol className="list-disc list-inside mt-4 text-gray-600">
+                      <li>Take a photo</li>
+                      <li>Enter your name</li>
+                      <li>Enter your message</li>
+                      <li>Enter your email (optional) to receive a copy of your photo card</li>
+                    </ol>
+                  </>
+                ),
+              },
+              {
+                step: "Step 2",
+                title: "View the Photo Wall",
+                content: (
+                  <>
+                    To see all shared memories, click the{" "}
+                    <Link href="/wall" className="text-red-500 hover:underline">
+                      View Wall
+                    </Link>{" "}
+                    button to explore the digital gallery.
+                  </>
+                ),
+              },
+              {
+                step: "Step 3",
+                title: "Enjoy Your Memories",
+                content: "Browse, share, and celebrate the moments that matter most on the Memory Wall!",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                whileHover={{ y: -5 }}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <span className="text-sm font-semibold text-red-500 mb-2">{item.step}</span>
+                  <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
+                  <span className="text-gray-600">{item.content}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
       </main>
     </div>
   );

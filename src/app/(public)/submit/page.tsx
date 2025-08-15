@@ -9,8 +9,6 @@ import SubmissionLoader from '@/app/components/SubmissionLoader';
 import SubmissionSuccess from '@/app/components/SubmissionSuccess';
 import { Memory } from '@/generated/prisma';
 import { ChevronLeftIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 export default function SubmitPage() {
   const [name, setName] = useState('');
@@ -24,8 +22,6 @@ export default function SubmitPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const { startUpload } = useUploadThing('memoryImage');
-
-  const router = useRouter();
 
   // Camera setup
   const startCamera = async () => {
@@ -159,15 +155,15 @@ export default function SubmitPage() {
       const filesToUpload = compositeFile ? [imageFile, compositeFile] : [imageFile];
 
       const uploadResponse = await startUpload(filesToUpload);
-      if (!uploadResponse?.[0]?.url) {
+      if (!uploadResponse?.[0]?.ufsUrl) {
         throw new Error('Image upload failed');
       }
 
       const formData = {
         name,
         message,
-        imageUrl: uploadResponse[0].url,
-        ...(compositeFile && uploadResponse[1]?.url && { fPhotoUrl: uploadResponse[1].url }),
+        imageUrl: uploadResponse[0].ufsUrl,
+        ...(compositeFile && uploadResponse[1]?.ufsUrl && { fPhotoUrl: uploadResponse[1].url }),
         ...(email.trim() !== '' && { email }),
       };
 
@@ -204,27 +200,14 @@ export default function SubmitPage() {
     await startCamera();
   };
 
-  const goBack = () => {
-    router.back();
-  }
-
   const isFormValid = name.trim() && message.trim() && image;
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-red-100/10 p-4 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
-        <div className='flex items-start justify-between'>
-          <button
-          onClick={goBack}
-          className=" bg-[#f97316] mt-[-5px] text-white rounded-full p-2 sm:p-3 w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-[#e66915] transition-colors"
-          aria-label="Go back"
-        >
-          <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-        <h1 className="justify-center text-2xl font-bold text-[#f97316] mb-6 text-center">
+        <h1 className="justify-center text-2xl font-bold text-red-500 mb-6 text-center">
           Share Your Memory
         </h1>
-        </div>
 
         {/* Hidden CompositeMemoryCard */}
         {image && (
@@ -266,7 +249,7 @@ export default function SubmitPage() {
                     className="bg-white rounded-full p-3 shadow-lg cursor-pointer"
                     disabled={isSubmitting}
                   >
-                    <div className="w-12 h-12 bg-[#f97316] rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
                       <span className="text-white text-xl"></span>
                     </div>
                   </button>
@@ -274,7 +257,7 @@ export default function SubmitPage() {
               </div>
             </div>
           ) : (
-            <div className="relative aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative aspect-[4/3] bg-red-200/10 rounded-lg overflow-hidden">
               <img
                 src={image}
                 alt="Captured"
@@ -284,7 +267,7 @@ export default function SubmitPage() {
           )}
 
           <div className="mt-2 flex justify-center">
-            <label className="inline-block bg-[#f97316] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#e66915] transition">
+            <label className="inline-block bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-red-200 transition">
               <span>Upload from Gallery</span>
               <input
                 type="file"
@@ -323,7 +306,7 @@ export default function SubmitPage() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
               placeholder="John Doe"
               required
             />
@@ -337,7 +320,7 @@ export default function SubmitPage() {
               value={message}
               maxLength={80}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
               placeholder="What's this memory about?"
               rows={3}
               required
@@ -352,7 +335,7 @@ export default function SubmitPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#f97316] focus:border-[#f97316]"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
               placeholder="your@email.com"
             />
           </div>
@@ -363,7 +346,7 @@ export default function SubmitPage() {
               disabled={!isFormValid || isSubmitting}
               className={`flex-1 py-3 text-lg cursor-pointer ${
                 isFormValid
-                  ? 'bg-[#f97316] hover:bg-[#e66915] text-white'
+                  ? 'bg-red-500 hover:bg-red-200 text-white'
                   : 'bg-gray-400 cursor-not-allowed'
               }`}
             >
